@@ -12,9 +12,34 @@ class Juggle:
         self.reset()
         
     def reset(self):
+        self.done = False
+        self.data = []
         self.balls = [Ball(self.hand_left[0],self.hand_left[1]-100)]
 
-    def step(self,action):
+    def step(self):
+
+        ball = self.balls[0]
+        dist_left = numpy.linalg.norm(ball.pos-self.hand_left)
+        dist_right = numpy.linalg.norm(ball.pos-self.hand_right)
+
+        if(dist_right < 50):
+            # hit target
+            self.done = True
+            
+
+        if(dist_left < 50):
+            inputs = self.get_inputs()
+            outputs = self.nn.forward(inputs)
+            ball.acc[0] = outputs[0]
+            ball.acc[1] = outputs[1]
+            self.data.append(
+                {
+                    "inputs":inputs,
+                    "outputs":outputs
+                }
+            )
+
+
         for b in self.balls:
             b.update()
 
